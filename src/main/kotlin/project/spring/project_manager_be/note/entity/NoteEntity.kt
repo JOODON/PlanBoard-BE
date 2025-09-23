@@ -1,17 +1,22 @@
-package project.spring.project_manager_be.note
+package project.spring.project_manager_be.note.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 import jakarta.persistence.PrePersist
 import jakarta.persistence.PreUpdate
+import jakarta.persistence.Table
 import project.spring.project_manager_be.utill.ByteUtil
 import java.time.LocalDateTime
 import kotlin.math.ceil
 
 @Entity
+@Table(name = "tb_note")
 class NoteEntity (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +50,9 @@ class NoteEntity (
 
     @Transient
     var isShareEdit : Boolean,
+
+    @OneToMany(mappedBy = "note", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    val tags: List<NoteTagEntity> = emptyList()
 ){
     fun updateUsage(maxBytes: Long) {
         val bytes = raw.toByteArray(Charsets.UTF_8).size.toLong()

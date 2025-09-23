@@ -1,7 +1,7 @@
 package project.spring.project_manager_be.project
 
 import org.springframework.stereotype.Service
-import project.spring.project_manager_be.note.NoteService
+import project.spring.project_manager_be.note.service.NoteService
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -87,14 +87,16 @@ class ProjectService(
             false // 형식이 맞지 않거나 유효하지 않은 날짜
         }
     }
+
     fun isDeadLineAfterStart(start: String, deadLine: String): Boolean {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val startDate = LocalDate.parse(start, formatter)
         val endDate = LocalDate.parse(deadLine, formatter)
 
-        // 종료일이 시작일 이후면 true
-        return endDate.isAfter(startDate)
+        // 종료일이 시작일과 같거나 이후면 true
+        return !endDate.isBefore(startDate)
     }
+
 
     fun updateProjectRequestToEntity(
         projectUpdateRequest: ProjectUpdateRequest,
