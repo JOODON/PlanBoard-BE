@@ -1,14 +1,10 @@
 package project.spring.project_manager_be.note.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -22,10 +18,8 @@ class NoteTagEntity(
     @Column(length = 20)
     val tag : String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "note_id", nullable = false)
-    @JsonIgnore
-    val note: NoteEntity
+    @Column(nullable = false)
+    val noteId: Long
 ) {
 
 

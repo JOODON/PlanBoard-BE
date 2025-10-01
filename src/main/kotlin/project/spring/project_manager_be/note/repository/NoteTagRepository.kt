@@ -11,7 +11,8 @@ import project.spring.project_manager_be.note.entity.NoteTagEntity
 interface NoteTagRepository : JpaRepository<NoteTagEntity, Long> {
 
     @Modifying
-    @Query("DELETE FROM NoteTagEntity tnt WHERE tnt.note = :note")
-    fun deleteAllByNote(@Param("note") note: NoteEntity)
+    @Query("DELETE FROM NoteTagEntity tnt WHERE tnt.noteId = :noteId")
+    fun deleteAllByNote(@Param("noteId") note: Long) : Int
 
+    fun findByNoteIdIn(ids : List<Long>) : List<NoteTagEntity>
 }

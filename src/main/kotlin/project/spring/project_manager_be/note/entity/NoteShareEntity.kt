@@ -14,6 +14,9 @@ class NoteShareEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
+    @Column(name = "project_id", nullable = false)
+    val projectId : Long,
+
     @Column(name = "note_id")
     val noteId: Long,
 
@@ -24,7 +27,18 @@ class NoteShareEntity(
     val username: String,
 
     @Column(name = "share_url")
-    val shareUrl: String
-)
-{
+    val shareUrl: String,
+
+) {
+    companion object {
+        fun toNoteShareEntity(userId: Long, projectId: Long, noteId: Long, username: String, shareUrl: String) =
+            NoteShareEntity(
+                id = null,
+                projectId = projectId,
+                noteId = noteId,
+                userId = userId,
+                username = username,
+                shareUrl = shareUrl
+            )
+    }
 }

@@ -1,4 +1,4 @@
-package project.spring.project_manager_be.note
+package project.spring.project_manager_be.note.http
 
 import project.spring.project_manager_be.note.entity.NoteEntity
 

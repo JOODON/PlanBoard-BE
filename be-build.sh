@@ -3,7 +3,7 @@
 JAR_NAME="/Users/dorosee/Documents/dev_jdh/PlanBoard-BE/build/libs/project_manager_be-0.0.1-SNAPSHOT.jar"  # 전송할 JAR 파일
 REMOTE_USER="azureuser"                     # 원격 서버 계정
 REMOTE_HOST="dh-lab.koreacentral.cloudapp.azure.com"  # 원격 서버 호스트
-REMOTE_DIR="/home/azureuser/server"           # 원격 서버 배포 디렉토리
+REMOTE_DIR="/home/azureuser/project/Plan-board-BE"           # 원격 서버 배포 디렉토리
 SSH_KEY="$HOME/.ssh/id_rsa"                # SSH 키 (없으면 -i 옵션 제거)
 
 
