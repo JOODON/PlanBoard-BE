@@ -1,21 +1,32 @@
 package project.spring.project_manager_be.user
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import project.spring.project_manager_be.auth.repository.AuthRepository
+import project.spring.project_manager_be.user.http.UserResponse
 
 @Service
 class UserService(
+    private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) {
 
-    fun findOrCreateUser(userEntity: UserEntity): UserEntity {
+    @Transactional
+    fun findOrCreateUser(userEntity: UserEntity): UserResponse {
         userEntity.phone = formatPhoneNumber(userEntity.phone);
         userEntity.birth = formatBirth(userEntity.birth)
 
-        return findUserByNameAndPhoneBirth(
+        val savedUser = findUserByNameAndPhoneBirth(
             name = userEntity.name,
             phone = userEntity.phone,
             birth = userEntity.birth
         ) ?: createUser(userEntity)
+
+        val isAuthExist = authRepository.existsByUserId(savedUser.id!!)
+
+        return UserResponse.toResponse(
+            savedUser, isAuthExist
+        )
     }
 
     fun findUserById(userId: Long): UserEntity =
