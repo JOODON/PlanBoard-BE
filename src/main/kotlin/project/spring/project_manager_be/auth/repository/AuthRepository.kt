@@ -8,4 +8,6 @@ interface AuthRepository : JpaRepository<AuthEntity, Long> {
     fun existsByEmail(email: String): Boolean
 
     fun existsByUserId(userId: Long): Boolean
+
+    fun findByEmail(email: String): AuthEntity?
 }

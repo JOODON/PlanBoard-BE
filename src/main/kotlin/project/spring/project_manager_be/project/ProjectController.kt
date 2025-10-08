@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import project.spring.project_manager_be.utill.ApiResponse
+import project.spring.project_manager_be.utill.SecurityUtil
 
 @RestController
 @RequestMapping("/api/projects")
@@ -18,19 +19,18 @@ class ProjectController(
 ) {
 
     @GetMapping
-    fun projectList(@RequestHeader userId : Long) =
-        ApiResponse(code = 200, message = "프로젝트 조회 성공", data = projectService.findProjectListByUserId(userId))
+    fun projectList() =
+        ApiResponse(code = 200, message = "프로젝트 조회 성공", data = projectService.findProjectListByUserId(SecurityUtil.getUserId()))
 
     @PostMapping
-    fun addProject(@RequestHeader userId : Long, @RequestBody projectEntity: ProjectEntity) =
-        ApiResponse(code = 200, message = "프로젝트 생성 성공", data = projectService.createProject(userId, projectEntity))
+    fun addProject(@RequestBody projectEntity: ProjectEntity) =
+        ApiResponse(code = 200, message = "프로젝트 생성 성공", data = projectService.createProject(SecurityUtil.getUserId(), projectEntity))
 
     @PutMapping("/{projectId}")
     fun updateProject(
-        @RequestHeader userId: Long,
         @PathVariable projectId: Long,
         @RequestBody projectUpdateRequest: ProjectUpdateRequest) =
-        ApiResponse(code = 200, message = "프로젝트 업데이트 성공", data = projectService.updateProject(userId,projectId ,projectUpdateRequest))
+        ApiResponse(code = 200, message = "프로젝트 업데이트 성공", data = projectService.updateProject(SecurityUtil.getUserId(),projectId ,projectUpdateRequest))
 
     @DeleteMapping("/{projectId}")
     fun deleteProject(

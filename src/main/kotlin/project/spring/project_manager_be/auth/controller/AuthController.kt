@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import project.spring.project_manager_be.auth.http.AuthRequest
+import project.spring.project_manager_be.auth.http.LoginRequest
 import project.spring.project_manager_be.auth.service.AuthService
 import project.spring.project_manager_be.utill.ApiResponse
 
@@ -18,5 +19,8 @@ class AuthController(
     fun addAuth(@RequestBody authRequest: AuthRequest) =
         ApiResponse(code = 200, "회원가입 성공", authService.createAuth(authRequest))
 
+    @PostMapping("/login")
+    fun login(@RequestBody loginRequest: LoginRequest) =
+        ApiResponse(code = 200 , "로그인 성공" , authService.login(loginRequest))
 
 }

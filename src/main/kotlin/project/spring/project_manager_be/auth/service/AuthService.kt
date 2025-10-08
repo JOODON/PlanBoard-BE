@@ -4,8 +4,10 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import project.spring.project_manager_be.auth.entity.AuthEntity
 import project.spring.project_manager_be.auth.http.AuthRequest
+import project.spring.project_manager_be.auth.http.LoginRequest
+import project.spring.project_manager_be.auth.http.LoginResponse
 import project.spring.project_manager_be.auth.repository.AuthRepository
-import project.spring.project_manager_be.user.UserEntity
+import project.spring.project_manager_be.config.jwt.JwtProvider
 import project.spring.project_manager_be.user.UserService
 
 private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".toRegex()
@@ -14,7 +16,8 @@ private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$".to
 class AuthService (
     private val authRepository: AuthRepository,
     private val userService: UserService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtProvider: JwtProvider,
 ){
 
     fun createAuth(authRequest: AuthRequest): AuthEntity {
@@ -24,11 +27,30 @@ class AuthService (
 
         validateEmailForSignup(authEntity.email)
         validatePasswordForSignup(authEntity.password)
-        passwordEncoder.encode(authEntity.password)
+        authEntity.password = passwordEncoder.encode(authEntity.password)
 
         return authRepository.save(authEntity)
     }
 
+    fun login(loginRequest: LoginRequest): LoginResponse {
+        val authInfo = authRepository.findByEmail(loginRequest.email)
+            ?: throw IllegalArgumentException("해당 유저는 존재하지 않습니다.")
+
+        // 비밀번호 일치 여부 확인
+
+        if (!passwordEncoder.matches(loginRequest.password, authInfo.password)) {
+            throw IllegalArgumentException("비밀번호가 올바르지 않습니다.")
+        }
+
+        val accessToken = jwtProvider.createAccessToken(authInfo.userId, authInfo.email)
+        val refreshToken = jwtProvider.createRefreshToken(authInfo.userId, authInfo.email)
+
+        return LoginResponse(
+            userId = authInfo.userId,
+            accessToken = accessToken,
+            refreshToken = refreshToken
+        )
+    }
 
     fun validateEmailForSignup(email: String) {
         // 1. 이메일 형식 검증

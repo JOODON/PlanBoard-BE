@@ -16,12 +16,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import project.spring.project_manager_be.config.filter.JwtAuthenticationFilter
+import project.spring.project_manager_be.config.jwt.JwtAccessDeniedHandler
+import project.spring.project_manager_be.config.jwt.JwtAuthenticationEntryPoint
 
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-class SecurityConfig {
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler,
+) {
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -48,14 +55,6 @@ class SecurityConfig {
         return source
     }
 
-//    @Bean
-//    fun authenticationProvider(): DaoAuthenticationProvider {
-//        val authProvider = DaoAuthenticationProvider()
-////        authProvider.setUserDetailsService(userDetailsService)
-////        authProvider.setPasswordEncoder(passwordEncoder())
-//        return authProvider
-//    }
-////
     //필터 함수 적용
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -64,6 +63,10 @@ class SecurityConfig {
             .cors { }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .exceptionHandling {
+                it.authenticationEntryPoint(jwtAuthenticationEntryPoint)  // 인증 실패 (401)
+                it.accessDeniedHandler(jwtAccessDeniedHandler)           // 권한 부족 (403)
             }
             .authorizeHttpRequests { authorize ->
                 authorize
@@ -75,8 +78,7 @@ class SecurityConfig {
                     ).permitAll()
                     .anyRequest().authenticated()
             }
-            //.authenticationProvider(authenticationProvider())
-            //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
